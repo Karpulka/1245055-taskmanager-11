@@ -6,3 +6,7 @@
 *.webp binary
 *.woff binary
 *.woff2 binary
+
+/node_modules
+/package-lock.json
+/.idea
