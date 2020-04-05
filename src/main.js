@@ -1,5 +1,3 @@
-'use strict';
-
 const TASK_COUNT = 3;
 const mainControlContainer = document.querySelector(`.main__control`);
 
