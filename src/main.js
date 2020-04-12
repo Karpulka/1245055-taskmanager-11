@@ -4,8 +4,10 @@ import {createSortTemplate} from "./components/sort";
 import {createTaskEditTemplate} from "./components/task-edit";
 import {createTaskCardTemplate} from "./components/task-card";
 import {createLoadMoreTemplate} from "./components/load-more-button";
+import {generateTasks} from "./mock/task";
 
-const TASK_COUNT = 3;
+const TASK_COUNT = 20;
+
 const mainControlContainer = document.querySelector(`.main__control`);
 
 const render = (container, template, position) => {
@@ -23,9 +25,10 @@ render(mainControlContainer, createFilterTemplate(), `afterend`);
 render(boardContainerElement, createSortTemplate(), `afterbegin`);
 render(tasksContainerElement, createTaskEditTemplate(), `beforeend`);
 
-for (let i = 0; i < TASK_COUNT; i++) {
-  render(tasksContainerElement, createTaskCardTemplate(), `beforeend`);
-}
+const tasks = generateTasks(TASK_COUNT);
+tasks.forEach((task) => {
+  render(tasksContainerElement, createTaskCardTemplate(task), `beforeend`);
+});
 
 boardContainerElement.appendChild(tasksContainerElement);
 render(boardContainerElement, createLoadMoreTemplate(), `beforeend`);
