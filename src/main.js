@@ -5,9 +5,13 @@ import {createTaskEditTemplate} from "./components/task-edit";
 import {createTaskCardTemplate} from "./components/task-card";
 import {createLoadMoreTemplate} from "./components/load-more-button";
 import {generateTasks} from "./mock/task";
+import {generateFilters} from "./mock/filter";
 
-const TASK_COUNT = 20;
+const TASK_COUNT = 25;
 const TASK_COUNT_ON_PAGE = 8;
+
+const tasks = generateTasks(TASK_COUNT);
+const filters = generateFilters();
 
 const mainControlContainer = document.querySelector(`.main__control`);
 
@@ -22,15 +26,29 @@ const tasksContainerElement = document.createElement(`div`);
 tasksContainerElement.classList.add(`board__tasks`);
 
 render(mainControlContainer, createMenuTemplate(), `beforeend`);
-render(mainControlContainer, createFilterTemplate(), `afterend`);
+render(mainControlContainer, createFilterTemplate(filters), `afterend`);
 render(boardContainerElement, createSortTemplate(), `afterbegin`);
 
-const tasks = generateTasks(TASK_COUNT);
 render(tasksContainerElement, createTaskEditTemplate(tasks[0]), `beforeend`);
-tasks.slice(1, TASK_COUNT_ON_PAGE).forEach((task) => {
+let showingTasksCount = TASK_COUNT_ON_PAGE;
+tasks.slice(1, showingTasksCount).forEach((task) => {
   render(tasksContainerElement, createTaskCardTemplate(task), `beforeend`);
 });
 
 boardContainerElement.appendChild(tasksContainerElement);
 render(boardContainerElement, createLoadMoreTemplate(), `beforeend`);
 document.querySelector(`.main`).appendChild(boardContainerElement);
+
+const loadMoreButton = boardContainerElement.querySelector(`.load-more`);
+
+loadMoreButton.addEventListener(`click`, () => {
+  const prevTasksCount = showingTasksCount;
+  showingTasksCount = showingTasksCount + TASK_COUNT_ON_PAGE;
+
+  tasks.slice(prevTasksCount, showingTasksCount)
+    .forEach((task) => render(tasksContainerElement, createTaskCardTemplate(task), `beforeend`));
+
+  if (showingTasksCount >= tasks.length) {
+    loadMoreButton.remove();
+  }
+});
