@@ -1,4 +1,5 @@
-import {COLORS} from "../constant";
+import {COLORS, MONTH_NAMES} from "../constant";
+import {formatTime} from "../util";
 
 const DescriptionItems = [
   `Изучить теорию`,
@@ -58,4 +59,16 @@ const generateTasks = (count) => {
     .map(generateTask);
 };
 
-export {generateTasks};
+const getTaskTemplateData = (task) => {
+  const {repeatingDays, dueDate, isArchive, isFavorite} = task;
+  const date = dueDate ? `${dueDate.getDate()} ${MONTH_NAMES[dueDate.getMonth()]}` : ``;
+  const time = dueDate ? formatTime(dueDate) : ``;
+  const repeatClass = repeatingDays.length > 0 ? ` card--repeat` : ``;
+  const deadlineClass = dueDate instanceof Date && dueDate < Date.now() ? ` card--deadline` : ``;
+  const archiveButtonInactiveClass = isArchive ? `` : ` card__btn--disabled`;
+  const favoriteButtonInactiveClass = isFavorite ? `` : ` card__btn--disabled`;
+
+  return {date, time, repeatClass, deadlineClass, archiveButtonInactiveClass, favoriteButtonInactiveClass};
+};
+
+export {generateTasks, getTaskTemplateData};

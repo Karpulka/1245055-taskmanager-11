@@ -7,6 +7,7 @@ import {createLoadMoreTemplate} from "./components/load-more-button";
 import {generateTasks} from "./mock/task";
 
 const TASK_COUNT = 20;
+const TASK_COUNT_ON_PAGE = 8;
 
 const mainControlContainer = document.querySelector(`.main__control`);
 
@@ -23,10 +24,10 @@ tasksContainerElement.classList.add(`board__tasks`);
 render(mainControlContainer, createMenuTemplate(), `beforeend`);
 render(mainControlContainer, createFilterTemplate(), `afterend`);
 render(boardContainerElement, createSortTemplate(), `afterbegin`);
-render(tasksContainerElement, createTaskEditTemplate(), `beforeend`);
 
 const tasks = generateTasks(TASK_COUNT);
-tasks.forEach((task) => {
+render(tasksContainerElement, createTaskEditTemplate(tasks[0]), `beforeend`);
+tasks.slice(1, TASK_COUNT_ON_PAGE).forEach((task) => {
   render(tasksContainerElement, createTaskCardTemplate(task), `beforeend`);
 });
 

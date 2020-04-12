@@ -1,14 +1,8 @@
-import {formatTime} from "../util";
-import {MONTH_NAMES} from "../constant";
+import {getTaskTemplateData} from "../mock/task";
 
 export const createTaskCardTemplate = (task) => {
-  const {repeatingDays, dueDate, description, color, isArchive, isFavorite} = task;
-  const date = dueDate ? `${dueDate.getDate()} ${MONTH_NAMES[dueDate.getMonth()]}` : ``;
-  const time = dueDate ? formatTime(dueDate) : ``;
-  const repeatClass = repeatingDays.length > 0 ? ` card--repeat` : ``;
-  const deadlineClass = dueDate instanceof Date && dueDate < Date.now() ? ` card--deadline` : ``;
-  const archiveButtonInactiveClass = isArchive ? `` : ` card__btn--disabled`;
-  const favoriteButtonInactiveClass = isFavorite ? `` : ` card__btn--disabled`;
+  const {description, color} = task;
+  const {date, time, repeatClass, deadlineClass, archiveButtonInactiveClass, favoriteButtonInactiveClass} = getTaskTemplateData(task);
 
   return `<article class="card card--${color}${repeatClass}${deadlineClass}">
             <div class="card__form">
