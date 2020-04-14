@@ -1,13 +1,13 @@
-import {COLORS, MONTH_NAMES} from "../constant";
+import {COLORS, MONTHS} from "../constant";
 import {formatTime} from "../util";
 
-const DescriptionItems = [
+const DESCRIPTIONS = [
   `Изучить теорию`,
   `Сделать домашку`,
   `Пройти интенсив на соточку`,
 ];
 
-const DefaultRepeatingDays = {
+const DEFAULT_REPEATING_DAYS = {
   "mo": false,
   "tu": false,
   "we": false,
@@ -18,7 +18,7 @@ const DefaultRepeatingDays = {
 };
 
 const generateRepeatingDays = () => {
-  return Object.assign({}, DefaultRepeatingDays, {
+  return Object.assign({}, DEFAULT_REPEATING_DAYS, {
     "mo": Math.random() > 0.5,
   });
 };
@@ -44,9 +44,9 @@ const generateTask = () => {
   const dueDate = Math.random() > 0.5 ? null : getDueDate();
 
   return {
-    repeatingDays: dueDate ? DefaultRepeatingDays : generateRepeatingDays(),
+    repeatingDays: dueDate ? DEFAULT_REPEATING_DAYS : generateRepeatingDays(),
     dueDate,
-    description: getRandomItemFromArray(DescriptionItems),
+    description: getRandomItemFromArray(DESCRIPTIONS),
     color: getRandomItemFromArray(COLORS),
     isArchive: Math.random() > 0.5,
     isFavorite: Math.random() > 0.5
@@ -61,7 +61,7 @@ const generateTasks = (count) => {
 
 const getTaskTemplateData = (task) => {
   const {repeatingDays, dueDate, isArchive, isFavorite} = task;
-  const date = dueDate ? `${dueDate.getDate()} ${MONTH_NAMES[dueDate.getMonth()]}` : ``;
+  const date = dueDate ? `${dueDate.getDate()} ${MONTHS[dueDate.getMonth()]}` : ``;
   const time = dueDate ? formatTime(dueDate) : ``;
   const repeatClass = repeatingDays.length > 0 ? ` card--repeat` : ``;
   const deadlineClass = dueDate instanceof Date && dueDate < Date.now() ? ` card--deadline` : ``;
