@@ -1,6 +1,7 @@
 import {getTaskTemplateData} from "../mock/task";
+import {createElement} from "../util";
 
-export const createTaskCardTemplate = (task) => {
+const createTaskCardTemplate = (task) => {
   const {description, color} = task;
   const {date, time, repeatClass, deadlineClass, archiveButtonInactiveClass, favoriteButtonInactiveClass} = getTaskTemplateData(task);
 
@@ -48,3 +49,26 @@ export const createTaskCardTemplate = (task) => {
             </div>
           </article>`;
 };
+
+export default class Task {
+  constructor(task) {
+    this._task = task;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTaskCardTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
