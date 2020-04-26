@@ -1,5 +1,6 @@
 import {COLORS, DAYS} from "../constant";
 import {getTaskTemplateData} from "../mock/task";
+import {createElement} from "../util";
 
 const createColorsMarkup = (colors, currentColor) => {
   return colors
@@ -44,7 +45,7 @@ const createRepeatingDaysMarkup = (days, repeatingDays) => {
     .join(`\n`);
 };
 
-export const createTaskEditTemplate = (task) => {
+const createTaskEditTemplate = (task) => {
   const {description, color, repeatingDays} = task;
   const {date, time, repeatClass, deadlineClass} = getTaskTemplateData(task);
   const isRepeatingTask = Object.values(repeatingDays).some(Boolean);
@@ -118,3 +119,26 @@ export const createTaskEditTemplate = (task) => {
             </form>
           </article>`;
 };
+
+export default class TaskEdit {
+  constructor(task) {
+    this._task = task;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTaskEditTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
