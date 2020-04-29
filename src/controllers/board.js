@@ -58,7 +58,7 @@ export default class BoardController {
       let showingTasksCount = TASK_COUNT_ON_PAGE;
       tasks.slice(0, showingTasksCount).forEach((task) => renderTask(this._taskListComponent, task));
 
-      render(boardContainerElement, this._taskListComponent, RenderPosition.BEFOREEND)
+      render(boardContainerElement, this._taskListComponent, RenderPosition.BEFOREEND);
       render(boardContainerElement, this._loadMoreButtonComponent, RenderPosition.BEFOREEND);
 
       this._loadMoreButtonComponent.setClickHandler(() => {
