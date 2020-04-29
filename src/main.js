@@ -6,28 +6,25 @@ import Task from "./components/task-card";
 import LoadMoreButton from "./components/load-more-button";
 import Board from "./components/board";
 import TaskList from "./components/task-list";
+import NoTask from "./components/no-task";
 import {generateTasks} from "./mock/task";
 import {generateFilters} from "./mock/filter";
-import {render, RenderPosition, createElement} from "./util";
+import {render, RenderPosition, remove, replace} from "./utils/render";
 
 const TASK_COUNT = 22;
 const TASK_COUNT_ON_PAGE = 8;
 const mainContainer = document.querySelector(`.main`);
 const mainControlContainer = document.querySelector(`.main__control`);
 
-const getNoTasksText = () => {
-  return `<p class="board__no-tasks">
-            Click «ADD NEW TASK» in menu to create your first task
-          </p>`;
-};
+const renderTask = (tasksContainerComponent, task) => {
+  const tasksContainerElement = tasksContainerComponent.getElement();
 
-const renderTask = (tasksContainerElement, task) => {
   const stopEdit = () => {
-    tasksContainerElement.replaceChild(taskElement, taskEditElement);
+    replace(taskComponent, taskEditComponent);
   };
 
   const onEditButtonClick = () => {
-    tasksContainerElement.replaceChild(taskEditElement, taskElement);
+    replace(taskEditComponent, taskComponent);
   };
 
   const onEditFormSubmit = (evt) => {
@@ -42,55 +39,55 @@ const renderTask = (tasksContainerElement, task) => {
     }
   };
 
-  const taskElement = new Task(task).getElement();
-  const editButton = taskElement.querySelector(`.card__btn--edit`);
+  const taskComponent = new Task(task);
+  const editButton = taskComponent.getElement().querySelector(`.card__btn--edit`);
   editButton.addEventListener(`click`, onEditButtonClick);
 
-  const taskEditElement = new TaskEdit(task).getElement();
-  const editForm = taskEditElement.querySelector(`form`);
+  const taskEditComponent = new TaskEdit(task);
+  const editForm = taskEditComponent.getElement().querySelector(`form`);
   editForm.addEventListener(`submit`, onEditFormSubmit);
   document.addEventListener(`keydown`, onEscapeKeyPress);
 
-  render(tasksContainerElement, taskElement, RenderPosition.BEFOREEND);
+  render(tasksContainerElement, taskComponent, RenderPosition.BEFOREEND);
 };
 
-const renderBoard = (boardContainerElement, tasks) => {
+const renderBoard = (boardContainerComponent, tasks) => {
+  const boardContainerElement = boardContainerComponent.getElement();
   if (tasks.length > 0) {
-    render(boardContainerElement, new Sort().getElement(), RenderPosition.AFTERBEGIN);
-    const tasksContainerElement = new TaskList().getElement();
+    render(boardContainerElement, new Sort(), RenderPosition.AFTERBEGIN);
+    const tasksContainer = new TaskList();
 
     let showingTasksCount = TASK_COUNT_ON_PAGE;
-    tasks.slice(0, showingTasksCount).forEach((task) => renderTask(tasksContainerElement, task));
+    tasks.slice(0, showingTasksCount).forEach((task) => renderTask(tasksContainer, task));
 
     const loadMoreButton = new LoadMoreButton();
     const loadMoreButtonElement = loadMoreButton.getElement();
 
-    render(boardContainerElement, tasksContainerElement, RenderPosition.BEFOREEND)
-    render(boardContainerElement, loadMoreButtonElement, RenderPosition.BEFOREEND);
+    render(boardContainerElement, tasksContainer, RenderPosition.BEFOREEND)
+    render(boardContainerElement, loadMoreButton, RenderPosition.BEFOREEND);
 
     loadMoreButtonElement.addEventListener(`click`, () => {
       const prevTasksCount = showingTasksCount;
       showingTasksCount = showingTasksCount + TASK_COUNT_ON_PAGE;
 
       tasks.slice(prevTasksCount, showingTasksCount)
-        .forEach((task) => renderTask(tasksContainerElement, task));
+        .forEach((task) => renderTask(tasksContainer, task));
 
       if (showingTasksCount >= tasks.length) {
-        loadMoreButtonElement.remove();
-        loadMoreButton.removeElement();
+        remove(loadMoreButton);
       }
     });
   } else {
-    render(boardContainerElement, createElement(getNoTasksText()), RenderPosition.BEFOREEND);
+    render(boardContainerElement, new NoTask(), RenderPosition.BEFOREEND);
   }
 }
 
 const tasks = generateTasks(TASK_COUNT);
 const filters = generateFilters();
 
-render(mainControlContainer, new Menu().getElement(), RenderPosition.BEFOREEND);
-render(mainControlContainer, new Filter(filters).getElement(), RenderPosition.AFTEREND);
+render(mainControlContainer, new Menu(), RenderPosition.BEFOREEND);
+render(mainControlContainer, new Filter(filters), RenderPosition.AFTEREND);
 
-const boardContainerElement = new Board().getElement();
-render(mainContainer, boardContainerElement, RenderPosition.BEFOREEND);
-renderBoard(boardContainerElement, tasks);
+const boardContainer = new Board();
+render(mainContainer, boardContainer, RenderPosition.BEFOREEND);
+renderBoard(boardContainer, tasks);

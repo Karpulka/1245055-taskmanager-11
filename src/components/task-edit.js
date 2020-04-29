@@ -1,4 +1,4 @@
-import {COLORS, DAYS} from "../constant";
+import {COLORS, DAYS} from "../utils/constant";
 import {getTaskTemplateData} from "../mock/task";
 import AbstractComponent from "./abstract-component";
 

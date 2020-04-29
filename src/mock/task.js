@@ -1,5 +1,5 @@
-import {COLORS, MONTHS} from "../constant";
-import {formatTime} from "../util";
+import {COLORS, MONTHS} from "../utils/constant";
+import {formatTime} from "../utils/common";
 
 const DESCRIPTIONS = [
   `Изучить теорию`,

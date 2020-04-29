@@ -33,6 +33,6 @@ const createMenuTemplate = () => {
 
 export default class Menu extends AbstractComponent {
   getTemplate() {
-    return createMenuTemplate(this._task);
+    return createMenuTemplate();
   }
 }
