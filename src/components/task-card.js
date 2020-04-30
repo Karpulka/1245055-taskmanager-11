@@ -1,5 +1,5 @@
 import {getTaskTemplateData} from "../mock/task";
-import {createElement} from "../util";
+import AbstractComponent from "./abstract-component";
 
 const createTaskCardTemplate = (task) => {
   const {description, color} = task;
@@ -50,25 +50,17 @@ const createTaskCardTemplate = (task) => {
           </article>`;
 };
 
-export default class Task {
+export default class Task extends AbstractComponent {
   constructor(task) {
+    super();
     this._task = task;
-    this._element = null;
   }
 
   getTemplate() {
     return createTaskCardTemplate(this._task);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setEditButtonHandler(handler) {
+    this.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, handler);
   }
 }
