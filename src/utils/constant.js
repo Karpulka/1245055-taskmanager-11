@@ -1,8 +1,8 @@
-export const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
+const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
 
-export const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
+const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
 
-export const MONTHS = [
+const MONTHS = [
   `January`,
   `February`,
   `March`,
@@ -16,3 +16,11 @@ export const MONTHS = [
   `November`,
   `December`,
 ];
+
+const SORT_TYPE = {
+  DATE_DOWN: `date-down`,
+  DATE_UP: `date-up`,
+  DEFAULT: `default`,
+};
+
+export {COLORS, DAYS, MONTHS, SORT_TYPE};
