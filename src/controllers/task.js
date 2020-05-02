@@ -5,39 +5,44 @@ import TaskEdit from "../components/task-edit";
 export default class TaskController {
   constructor(container) {
     this._container = container;
+    this._taskComponent = null;
+    this._taskEditComponent = null;
+    this._onEditButtonClick = this._onEditButtonClick.bind(this);
+    this._onEditFormSubmit = this._onEditFormSubmit.bind(this);
+    this._onEscapeKeyPress = this._onEscapeKeyPress.bind(this);
+    this._stopEdit = this._stopEdit.bind(this);
   }
 
   render(task) {
     const tasksContainerComponent = this._container;
     const tasksContainerElement = tasksContainerComponent.getElement();
 
-    const stopEdit = () => {
-      replace(taskComponent, taskEditComponent);
-      document.removeEventListener(`keydown`, onEscapeKeyPress);
-    };
+    this._taskComponent = new Task(task);
+    this._taskEditComponent = new TaskEdit(task);
+    this._taskComponent.setEditButtonHandler(this._onEditButtonClick);
+    this._taskEditComponent.setSubmitHandler(this._onEditFormSubmit);
 
-    const onEditButtonClick = () => {
-      replace(taskEditComponent, taskComponent);
-      document.addEventListener(`keydown`, onEscapeKeyPress);
-    };
+    render(tasksContainerElement, this._taskComponent, RenderPosition.BEFOREEND);
+  }
 
-    const onEditFormSubmit = (evt) => {
-      evt.preventDefault();
-      stopEdit();
-    };
+  _stopEdit() {
+    replace(this._taskComponent, this._taskEditComponent);
+    document.removeEventListener(`keydown`, this._onEscapeKeyPress);
+  }
 
-    const onEscapeKeyPress = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        stopEdit();
-      }
-    };
+  _onEditButtonClick() {
+    replace(this._taskEditComponent, this._taskComponent);
+    document.addEventListener(`keydown`, this._onEscapeKeyPress);
+  }
 
-    const taskComponent = new Task(task);
-    taskComponent.setEditButtonHandler(onEditButtonClick);
+  _onEditFormSubmit(evt) {
+    evt.preventDefault();
+    this._stopEdit();
+  }
 
-    const taskEditComponent = new TaskEdit(task);
-    taskEditComponent.setSubmitHandler(onEditFormSubmit);
-
-    render(tasksContainerElement, taskComponent, RenderPosition.BEFOREEND);
+  _onEscapeKeyPress(evt) {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      this._stopEdit();
+    }
   }
 }

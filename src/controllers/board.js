@@ -44,6 +44,7 @@ export default class BoardController {
     this._noTaskComponent = new NoTask();
     this._showingTasksCount = TASK_COUNT_ON_PAGE;
     this._tasks = [];
+    this._showedTaskControllers = [];
   }
 
   render(tasks) {
@@ -51,7 +52,8 @@ export default class BoardController {
     const boardContainerElement = this._container.getElement();
     if (this._tasks.length > 0) {
       render(boardContainerElement, this._sortComponent, RenderPosition.AFTERBEGIN);
-      renderTasks(this._taskListComponent, this._tasks.slice(0, this._showingTasksCount));
+      const newTasks = renderTasks(this._taskListComponent, this._tasks.slice(0, this._showingTasksCount));
+      this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
       render(boardContainerElement, this._taskListComponent, RenderPosition.BEFOREEND);
       this._renderLoadMoreButton();
       this._onSortTypeChange();
@@ -71,8 +73,8 @@ export default class BoardController {
       const prevTasksCount = this._showingTasksCount;
       this._showingTasksCount = this._showingTasksCount + TASK_COUNT_ON_PAGE;
       const sortedTasks = getSortedTasks(this._tasks, this._sortComponent.getSortType(), prevTasksCount, this._showingTasksCount);
-      renderTasks(this._taskListComponent, sortedTasks);
-
+      const newTasks = renderTasks(this._taskListComponent, sortedTasks);
+      this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
       if (this._showingTasksCount >= this._tasks.length) {
         remove(this._loadMoreButtonComponent);
       }
@@ -84,8 +86,8 @@ export default class BoardController {
       this._showingTasksCount = TASK_COUNT_ON_PAGE;
       const sortedTasks = getSortedTasks(this._tasks, sortType, 0, this._showingTasksCount);
       this._taskListComponent.getElement().innerHTML = ``;
-
-      renderTasks(this._taskListComponent, sortedTasks);
+      const newTasks = renderTasks(this._taskListComponent, sortedTasks);
+      this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
       remove(this._loadMoreButtonComponent);
       this._renderLoadMoreButton();
     });
