@@ -2,16 +2,22 @@ import {render, RenderPosition, replace} from "../utils/render";
 import Task from "../components/task-card";
 import TaskEdit from "../components/task-edit";
 
+const Mode = {
+  DEFAULT: `default`,
+  EDIT: `edit`,
+};
+
 export default class TaskController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
+    this._onViewChange = onViewChange;
+    this._mode = Mode.DEFAULT;
     this._taskComponent = null;
     this._taskEditComponent = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
     this._onEditFormSubmit = this._onEditFormSubmit.bind(this);
     this._onEscapeKeyPress = this._onEscapeKeyPress.bind(this);
-    this._stopEdit = this._stopEdit.bind(this);
   }
 
   render(task) {
@@ -43,24 +49,39 @@ export default class TaskController {
     }
   }
 
-  _stopEdit() {
-    replace(this._taskComponent, this._taskEditComponent);
-    document.removeEventListener(`keydown`, this._onEscapeKeyPress);
-  }
-
   _onEditButtonClick() {
-    replace(this._taskEditComponent, this._taskComponent);
-    document.addEventListener(`keydown`, this._onEscapeKeyPress);
+    this._replaceTaskToEdit();
   }
 
   _onEditFormSubmit(evt) {
     evt.preventDefault();
-    this._stopEdit();
+    this._replaceEditToTask();
   }
 
   _onEscapeKeyPress(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
-      this._stopEdit();
+      this._replaceEditToTask();
+    }
+  }
+
+  _replaceEditToTask() {
+    document.removeEventListener(`keydown`, this._onEscapeKeyPress);
+    this._taskEditComponent.reset();
+    replace(this._taskComponent, this._taskEditComponent);
+    this._mode = Mode.DEFAULT;
+  }
+
+
+  _replaceTaskToEdit() {
+    this._onViewChange();
+    replace(this._taskEditComponent, this._taskComponent);
+    this._mode = Mode.EDIT;
+    document.addEventListener(`keydown`, this._onEscapeKeyPress);
+  }
+
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToTask();
     }
   }
 }
