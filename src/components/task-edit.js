@@ -1,21 +1,23 @@
 import {COLORS, DAYS} from "../utils/constant";
 import {getTaskTemplateData} from "../mock/task";
 import AbstractSmartComponent from "./abstract-smart-component";
+import {getRandomNumber} from "../utils/common";
 
 const createColorsMarkup = (colors, currentColor) => {
   return colors
     .map((color, index) => {
+      const randomNumber = getRandomNumber(1, 100);
       return (
         `<input
           type="radio"
-          id="color-${color}-${index}"
+          id="color-${color}-${index}${randomNumber}"
           class="card__color-input card__color-input--${color} visually-hidden"
           name="color"
           value="${color}"
           ${currentColor === color ? `checked` : ``}
         />
         <label
-          for="color-${color}--${index}"
+          for="color-${color}--${index}${randomNumber}"
           class="card__color card__color--${color}"
           >${color}</label
         >`
@@ -179,6 +181,15 @@ export default class TaskEdit extends AbstractSmartComponent {
     element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, () => {
       this._isRepeatingTask = !this._isRepeatingTask;
       this.rerender();
+    });
+
+    element.querySelectorAll(`[name="color"]`).forEach((inputColor) => {
+      inputColor.addEventListener(`change`, (evt) => {
+        if (evt.target.value !== this._task.color) {
+          this._task.color = evt.target.value;
+          this.rerender();
+        }
+      });
     });
 
     const repeatDays = element.querySelector(`.card__repeat-days`);

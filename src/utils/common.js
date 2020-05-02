@@ -9,4 +9,8 @@ const formatTime = (date) => {
   return `${hours}:${minutes}`;
 };
 
-export {formatTime};
+const getRandomNumber = (min, max) => {
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
+export {formatTime, getRandomNumber};
