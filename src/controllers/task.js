@@ -74,7 +74,6 @@ export default class TaskController {
     document.removeEventListener(`keydown`, this._onEscapeKeyPress);
   }
 
-
   _replaceTaskToEdit() {
     this._onViewChange();
     replace(this._taskEditComponent, this._taskComponent);

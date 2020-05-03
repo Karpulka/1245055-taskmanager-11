@@ -1,23 +1,21 @@
 import {COLORS, DAYS} from "../utils/constant";
 import {getTaskTemplateData} from "../mock/task";
 import AbstractSmartComponent from "./abstract-smart-component";
-import {getRandomNumber} from "../utils/common";
 
 const createColorsMarkup = (colors, currentColor) => {
   return colors
     .map((color, index) => {
-      const randomNumber = getRandomNumber(1, 100);
       return (
         `<input
           type="radio"
-          id="color-${color}--${index}${randomNumber}"
+          id="color-${color}--${index}"
           class="card__color-input card__color-input--${color} visually-hidden"
           name="color"
           value="${color}"
           ${currentColor === color ? `checked` : ``}
         />
         <label
-          for="color-${color}--${index}${randomNumber}"
+          for="color-${color}--${index}"
           class="card__color card__color--${color}"
           >${color}</label
         >`
