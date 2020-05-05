@@ -2,6 +2,7 @@ import {COLORS, DAYS} from "../utils/constant";
 import {getTaskTemplateData} from "../mock/task";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from "flatpickr";
+import {formatTime, formatDate} from "../utils/common";
 
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -55,7 +56,7 @@ const isRepeating = (repeatingDays) => {
 const createTaskEditTemplate = (task, options = {}) => {
   const {description, color} = task;
   const {isDateShowing, isRepeatingTask, activeRepeatingDays} = options;
-  const {date, time, repeatClass, deadlineClass} = getTaskTemplateData(task);
+  const {date, repeatClass, deadlineClass} = getTaskTemplateData(task);
   const colorsMarkup = createColorsMarkup(COLORS, color);
   const repeatingDaysMarkup = createRepeatingDaysMarkup(DAYS, activeRepeatingDays);
   const isBlockSaveButton = (isDateShowing && isRepeatingTask) || (isRepeatingTask && !isRepeating(activeRepeatingDays));
@@ -93,7 +94,7 @@ const createTaskEditTemplate = (task, options = {}) => {
                                       type="text"
                                       placeholder=""
                                       name="date"
-                                      value="${date} ${time}"
+                                      value="${formatDate(date)} ${formatTime(date)}"
                                     />
                                   </label>
                                 </fieldset>` : `` }
