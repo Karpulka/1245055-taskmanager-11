@@ -1,6 +1,9 @@
 import {COLORS, DAYS} from "../utils/constant";
 import {getTaskTemplateData} from "../mock/task";
 import AbstractSmartComponent from "./abstract-smart-component";
+import flatpickr from "flatpickr";
+
+import "flatpickr/dist/flatpickr.min.css";
 
 const createColorsMarkup = (colors, currentColor) => {
   return colors
@@ -134,6 +137,18 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
     this._submitHandler = null;
     this._subscribeOnEvents();
+    this._flatpickr = null;
+
+    this._applyFlatpickr();
+  }
+
+  removeElement() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    super.removeElement();
   }
 
   getTemplate() {
@@ -156,6 +171,8 @@ export default class TaskEdit extends AbstractSmartComponent {
 
   rerender() {
     super.rerender();
+
+    this._applyFlatpickr();
   }
 
   reset() {
@@ -196,6 +213,25 @@ export default class TaskEdit extends AbstractSmartComponent {
         this._activeRepeatingDays[evt.target.value] = evt.target.checked;
 
         this.rerender();
+      });
+    }
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    if (this._isDateShowing) {
+      const dateElement = this.getElement().querySelector(`.card__date`);
+      this._flatpickr = flatpickr(dateElement, {
+        altInput: true,
+        allowInput: true,
+        defaultDate: this._task.dueDate || `today`,
+        enableTime: true,
+        altFormat: `d F H:i`,
+        dateFormat: `Y-m-d`
       });
     }
   }
