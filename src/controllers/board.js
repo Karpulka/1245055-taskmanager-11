@@ -36,27 +36,27 @@ const renderTasks = (taskListComponent, tasks, onDataChange, onViewChange) => {
 };
 
 export default class BoardController {
-  constructor(container) {
+  constructor(container, tasksModel) {
     this._container = container;
+    this._tasksModel = tasksModel;
     this._sortComponent = new Sort();
     this._taskListComponent = new TaskList();
     this._loadMoreButtonComponent = new LoadMoreButton();
     this._noTaskComponent = new NoTask();
     this._showingTasksCount = TASK_COUNT_ON_PAGE;
-    this._tasks = [];
     this._showedTaskControllers = [];
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._sortedTasks = [];
   }
 
-  render(tasks) {
-    this._tasks = tasks;
+  render() {
+    const tasks = this._tasksModel.getTasks();
     const boardContainerElement = this._container.getElement();
-    if (this._tasks.length > 0) {
+    if (tasks.length > 0) {
       render(boardContainerElement, this._sortComponent, RenderPosition.AFTERBEGIN);
-      this._sortedTasks = this._tasks.slice(0, this._showingTasksCount);
-      const newTasks = renderTasks(this._taskListComponent, this._tasks.slice(0, this._showingTasksCount), this._onDataChange, this._onViewChange);
+      this._sortedTasks = tasks.slice(0, this._showingTasksCount);
+      const newTasks = renderTasks(this._taskListComponent, tasks.slice(0, this._showingTasksCount), this._onDataChange, this._onViewChange);
       this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
       render(boardContainerElement, this._taskListComponent, RenderPosition.BEFOREEND);
       this._renderLoadMoreButton();
@@ -67,7 +67,8 @@ export default class BoardController {
   }
 
   _renderLoadMoreButton() {
-    if (this._showingTasksCount >= this._tasks.length) {
+    const tasks = this._tasksModel.getTasks();
+    if (this._showingTasksCount >= tasks.length) {
       return;
     }
     const boardContainerElement = this._container.getElement();
@@ -76,11 +77,11 @@ export default class BoardController {
     this._loadMoreButtonComponent.setClickHandler(() => {
       const prevTasksCount = this._showingTasksCount;
       this._showingTasksCount = this._showingTasksCount + TASK_COUNT_ON_PAGE;
-      const sortedTasks = getSortedTasks(this._tasks, this._sortComponent.getSortType(), prevTasksCount, this._showingTasksCount);
+      const sortedTasks = getSortedTasks(tasks, this._sortComponent.getSortType(), prevTasksCount, this._showingTasksCount);
       this._sortedTasks = this._sortedTasks.concat(sortedTasks);
       const newTasks = renderTasks(this._taskListComponent, sortedTasks, this._onDataChange, this._onViewChange);
       this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
-      if (this._showingTasksCount >= this._tasks.length) {
+      if (this._showingTasksCount >= tasks.length) {
         remove(this._loadMoreButtonComponent);
       }
     });
@@ -89,7 +90,7 @@ export default class BoardController {
   _onSortTypeChange() {
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
       this._showingTasksCount = TASK_COUNT_ON_PAGE;
-      const sortedTasks = getSortedTasks(this._tasks, sortType, 0, this._showingTasksCount);
+      const sortedTasks = getSortedTasks(this._tasksModel.getTasks(), sortType, 0, this._showingTasksCount);
       this._sortedTasks = sortedTasks;
       this._taskListComponent.getElement().innerHTML = ``;
       const newTasks = renderTasks(this._taskListComponent, sortedTasks, this._onDataChange, this._onViewChange);
@@ -100,12 +101,7 @@ export default class BoardController {
   }
 
   _onDataChange(oldData, newData) {
-    const index = this._tasks.findIndex((it) => it === oldData);
-    if (index === -1) {
-      return;
-    }
-
-    this._tasks = [].concat(this._tasks.slice(0, index), newData, this._tasks.slice(index + 1));
+    this._tasksModel.updateTask(oldData.id, newData);
     const renderTaskIndex = this._sortedTasks.findIndex((sortTask) => sortTask === oldData);
     this._sortedTasks[renderTaskIndex] = newData;
     this._showedTaskControllers[renderTaskIndex].render(newData);
