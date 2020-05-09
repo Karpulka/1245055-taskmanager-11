@@ -51,7 +51,7 @@ export default class BoardController {
   }
 
   render() {
-    const tasks = this._tasksModel.getTasks();
+    const tasks = this._tasksModel.getTasksAll();
     const boardContainerElement = this._container.getElement();
     if (tasks.length > 0) {
       render(boardContainerElement, this._sortComponent, RenderPosition.AFTERBEGIN);
@@ -67,7 +67,7 @@ export default class BoardController {
   }
 
   _renderLoadMoreButton() {
-    const tasks = this._tasksModel.getTasks();
+    const tasks = this._tasksModel.getTasksAll();
     if (this._showingTasksCount >= tasks.length) {
       return;
     }

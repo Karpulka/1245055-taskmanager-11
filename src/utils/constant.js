@@ -23,4 +23,13 @@ const SORT_TYPE = {
   DEFAULT: `default`,
 };
 
-export {COLORS, DAYS, MONTHS, SORT_TYPE};
+const FilterType = {
+  ALL: `all`,
+  OVERDUE: `overdue`,
+  TODAY: `today`,
+  FAVORITES: `favorites`,
+  REPEATING: `repeating`,
+  ARCHIVE: `archive`
+};
+
+export {COLORS, DAYS, MONTHS, SORT_TYPE, FilterType};

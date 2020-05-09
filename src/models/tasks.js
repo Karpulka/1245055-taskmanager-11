@@ -7,7 +7,7 @@ export default class Tasks {
     this._tasks = tasks;
   }
 
-  getTasks() {
+  getTasksAll() {
     return this._tasks;
   }
 
