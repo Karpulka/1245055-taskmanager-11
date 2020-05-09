@@ -1,4 +1,4 @@
-import {render, RenderPosition, replace} from "../utils/render";
+import {render, RenderPosition, replace, remove} from "../utils/render";
 import Task from "../components/task-card";
 import TaskEdit from "../components/task-edit";
 
@@ -85,5 +85,11 @@ export default class TaskController {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToTask();
     }
+  }
+
+  destroy() {
+    remove(this._taskEditComponent);
+    remove(this._taskComponent);
+    document.removeEventListener(`keydown`, this._onEscapeKeyPress);
   }
 }
