@@ -1,4 +1,5 @@
 import {COLORS, MONTHS} from "../utils/constant";
+import moment from "moment";
 
 const DESCRIPTIONS = [
   `Изучить теорию`,
@@ -59,11 +60,21 @@ const generateTasks = (count) => {
     .map(generateTask);
 };
 
+const isOverdueDate = (dueDate, date) => {
+  return dueDate < date && !isOneDay(date, dueDate);
+};
+
+const isOneDay = (dateA, dateB) => {
+  const a = moment(dateA);
+  const b = moment(dateB);
+  return a.diff(b, `days`) === 0 && new Date(dateA).getDate() === new Date(dateB).getDate();
+};
+
 const getTaskTemplateData = (task) => {
   const {repeatingDays, dueDate, isArchive, isFavorite} = task;
   const date = dueDate ? `${dueDate.getDate()} ${MONTHS[dueDate.getMonth()]}` : ``;
-  const repeatClass = repeatingDays.length > 0 ? ` card--repeat` : ``;
-  const deadlineClass = dueDate instanceof Date && dueDate < Date.now() ? ` card--deadline` : ``;
+  const repeatClass = Object.values(repeatingDays).some(Boolean) ? ` card--repeat` : ``;
+  const deadlineClass = dueDate && isOverdueDate(new Date(dueDate), Date.now()) ? ` card--deadline` : ``;
   const archiveButtonInactiveClass = isArchive ? ` card__btn--disabled` : ``;
   const favoriteButtonInactiveClass = isFavorite ? ` card__btn--disabled` : ``;
 

@@ -3,7 +3,8 @@ import Task from "../components/task-card";
 import TaskEdit from "../components/task-edit";
 import {DEFAULT_COLOR} from "../utils/constant";
 
-const Mode = {
+export const Mode = {
+  ADDING: `adding`,
   DEFAULT: `default`,
   EDIT: `edit`,
 };
@@ -43,8 +44,9 @@ export default class TaskController {
     return this._task;
   }
 
-  render(task) {
-    this._task = task;
+  render(task, mode) {
+    this._task = Object.assign({}, task);
+    this._mode = mode ? mode : this._mode;
     const tasksContainerComponent = this._container;
     const tasksContainerElement = tasksContainerComponent.getElement();
 
@@ -71,11 +73,24 @@ export default class TaskController {
         this._onDataChange(task, null);
         this.destroy();
       });
-      if (oldTaskEditComponent && oldTaskComponent) {
-        replace(this._taskComponent, oldTaskComponent);
-        replace(this._taskEditComponent, oldTaskEditComponent);
-      } else {
-        render(tasksContainerElement, this._taskComponent, RenderPosition.BEFOREEND);
+
+      switch (this._mode) {
+        case Mode.DEFAULT:
+          if (oldTaskEditComponent && oldTaskComponent) {
+            replace(this._taskComponent, oldTaskComponent);
+            replace(this._taskEditComponent, oldTaskEditComponent);
+          } else {
+            render(tasksContainerElement, this._taskComponent, RenderPosition.BEFOREEND);
+          }
+          break;
+        case Mode.ADDING:
+          if (oldTaskEditComponent && oldTaskComponent) {
+            remove(oldTaskComponent);
+            remove(oldTaskEditComponent);
+          }
+          document.addEventListener(`keydown`, this._onEscapeKeyPress);
+          render(tasksContainerElement, this._taskEditComponent, RenderPosition.AFTERBEGIN);
+          break;
       }
     }
   }
@@ -91,12 +106,21 @@ export default class TaskController {
 
   _onEscapeKeyPress(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
-      this._replaceEditToTask();
+      if (this._mode === Mode.ADDING) {
+        this._mode = Mode.DEFAULT;
+        this._onDataChange(this._task, null);
+      } else {
+        this._replaceEditToTask();
+      }
     }
   }
 
   _replaceEditToTask() {
-    this._taskEditComponent.reset();
+    if (this._mode === Mode.ADDING) {
+      this._onDataChange(EmptyTask, this._taskEditComponent.task);
+    } else {
+      this._taskEditComponent.reset();
+    }
     replace(this._taskComponent, this._taskEditComponent);
     this._mode = Mode.DEFAULT;
     document.removeEventListener(`keydown`, this._onEscapeKeyPress);

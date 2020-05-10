@@ -132,6 +132,7 @@ const createTaskEditTemplate = (task, options = {}) => {
 export default class TaskEdit extends AbstractSmartComponent {
   constructor(task) {
     super();
+    this._defaulTask = task;
     this._task = task;
     this._isDateShowing = !!task.dueDate;
     this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
@@ -141,6 +142,10 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._flatpickr = null;
 
     this._applyFlatpickr();
+  }
+
+  get task() {
+    return this._task;
   }
 
   removeElement() {
@@ -181,11 +186,11 @@ export default class TaskEdit extends AbstractSmartComponent {
   }
 
   reset() {
-    const task = this._task;
+    this._task = this._defaulTask;
 
-    this._isDateShowing = !!task.dueDate;
-    this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
-    this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
+    this._isDateShowing = !!this._task.dueDate;
+    this._isRepeatingTask = Object.values(this._task.repeatingDays).some(Boolean);
+    this._activeRepeatingDays = Object.assign({}, this._task.repeatingDays);
 
     this.rerender();
   }
@@ -216,7 +221,24 @@ export default class TaskEdit extends AbstractSmartComponent {
     if (repeatDays) {
       repeatDays.addEventListener(`change`, (evt) => {
         this._activeRepeatingDays[evt.target.value] = evt.target.checked;
+        const checkedDays = [];
+        repeatDays.querySelectorAll(`[name="repeat"]:checked`).forEach((repeatDay) => {
+          checkedDays.push(repeatDay.value);
+        });
+        DAYS.forEach((day) => {
+          this._task.repeatingDays[day] = checkedDays.findIndex((dayName) => dayName === day) > -1 ? true : false;
+        });
+        this.rerender();
+      });
+    }
 
+    element.querySelector(`textarea.card__text`).addEventListener(`change`, (evt) => {
+      this._task.description = evt.target.value;
+    });
+
+    if (element.querySelector(`[name="date"]`)) {
+      element.querySelector(`[name="date"]`).addEventListener(`change`, (evt) => {
+        this._task.dueDate = new Date(evt.target.value);
         this.rerender();
       });
     }
@@ -236,7 +258,7 @@ export default class TaskEdit extends AbstractSmartComponent {
         defaultDate: this._task.dueDate || `today`,
         enableTime: true,
         altFormat: `d F H:i`,
-        dateFormat: `Y-m-d`
+        dateFormat: `Y-m-d H:i`
       });
     }
   }

@@ -40,6 +40,10 @@ export default class Tasks {
     this.setTasks([].concat(this._tasks.slice(0, index), this._tasks.slice(index + 1)));
   }
 
+  addTask(newData) {
+    this.setTasks([].concat(newData, this._tasks));
+  }
+
   setFilter(filterType) {
     this._currentFilterType = filterType;
     this._callHandlers(this._filterChangeHandlers);

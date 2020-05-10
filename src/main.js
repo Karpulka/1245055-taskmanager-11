@@ -1,4 +1,4 @@
-import Menu from "./components/menu";
+import Menu, {MenuItem} from "./components/menu";
 import Board from "./components/board";
 import {generateTasks} from "./mock/task";
 import {render, RenderPosition} from "./utils/render";
@@ -17,8 +17,19 @@ tasksModel.setTasks(tasks);
 const filterController = new FilterController(mainControlContainer, tasksModel);
 filterController.render();
 
-render(mainControlContainer, new Menu(), RenderPosition.BEFOREEND);
+const menuComponent = new Menu();
+render(mainControlContainer, menuComponent, RenderPosition.BEFOREEND);
 
 const boardContainer = new Board();
 render(mainContainer, boardContainer, RenderPosition.BEFOREEND);
-new BoardController(boardContainer, tasksModel).render();
+const boardController = new BoardController(boardContainer, tasksModel);
+boardController.render();
+
+menuComponent.setOnChange((menuItem) => {
+  switch (menuItem) {
+    case MenuItem.NEW_TASK:
+      menuComponent.setActiveItem(MenuItem.TASKS);
+      boardController.createTask();
+      break;
+  }
+});

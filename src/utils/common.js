@@ -22,4 +22,8 @@ const isOneDay = (dateA, dateB) => {
   return a.diff(b, `days`) === 0 && dateA.getDate() === dateB.getDate();
 };
 
-export {formatTime, formatDate, isRepeating, isOverdueDate, isOneDay};
+const getRandomNumber = (min, max) => {
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
+export {formatTime, formatDate, isRepeating, isOverdueDate, isOneDay, getRandomNumber};
