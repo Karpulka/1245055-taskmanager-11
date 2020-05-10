@@ -20,19 +20,19 @@ const getTasksByFilter = (tasks, filterType) => {
   }
 
   return tasks;
-}
+};
 
 const getArchiveTasks = (tasks) => {
   return tasks.filter((task) => task.isArchive);
-}
+};
 
 const getNotArchiveTasks = (tasks) => {
   return tasks.filter((task) => !task.isArchive);
-}
+};
 
 const getFavoriteTasks = (tasks) => {
   return tasks.filter((task) => task.isFavorite);
-}
+};
 
 const getOverdueTasks = (tasks, date) => {
   return tasks.filter((task) => {
@@ -44,14 +44,14 @@ const getOverdueTasks = (tasks, date) => {
 
     return isOverdueDate(dueDate, date);
   });
-}
+};
 
 const getRepeatingTasks = (tasks) => {
   return tasks.filter((task) => isRepeating(task.repeatingDays));
-}
+};
 
 const getTasksInOneDay = (tasks, date) => {
   return tasks.filter((task) => isOneDay(task.dueDate, date));
-}
+};
 
 export {getTasksByFilter};

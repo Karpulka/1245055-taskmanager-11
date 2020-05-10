@@ -28,7 +28,7 @@ export default class Tasks {
       return;
     }
 
-    this._tasks = [].concat(this._tasks.slice(0, index), newTask, this._tasks.slice(index + 1));
+    this.setTasks([].concat(this._tasks.slice(0, index), newTask, this._tasks.slice(index + 1)));
   }
 
   setFilter(filterType) {

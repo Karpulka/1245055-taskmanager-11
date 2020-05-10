@@ -8,19 +8,18 @@ export default class FilterController {
     this._container = container;
     this._tasksModel = tasksModel;
     this._currentFilterType = FilterType.ALL;
-    this._tasks = this._tasksModel.getTasksAll();
     this._filterComponent = null;
 
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
-    this._tasksModel.setDataChangeHandler(this._onDataChange());
+    this._tasksModel.setDataChangeHandler(this._onDataChange);
   }
 
   render() {
     const filters = Object.values(FilterType).map((filterType) => {
       return {
         name: filterType,
-        count: getTasksByFilter(this._tasks.slice(), filterType).length,
+        count: getTasksByFilter(this._tasksModel.getTasksAll().slice(), filterType).length,
         checked: filterType === this._currentFilterType
       };
     });

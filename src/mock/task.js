@@ -43,7 +43,7 @@ const generateTask = () => {
   const dueDate = Math.random() > 0.5 ? null : getDueDate();
 
   return {
-    id: new Date().getTime(),
+    id: new Date().getTime() + getRandomNumber(1, 10000),
     repeatingDays: dueDate ? DEFAULT_REPEATING_DAYS : generateRepeatingDays(),
     dueDate,
     description: getRandomItemFromArray(DESCRIPTIONS),
@@ -64,8 +64,8 @@ const getTaskTemplateData = (task) => {
   const date = dueDate ? `${dueDate.getDate()} ${MONTHS[dueDate.getMonth()]}` : ``;
   const repeatClass = repeatingDays.length > 0 ? ` card--repeat` : ``;
   const deadlineClass = dueDate instanceof Date && dueDate < Date.now() ? ` card--deadline` : ``;
-  const archiveButtonInactiveClass = isArchive ? `` : ` card__btn--disabled`;
-  const favoriteButtonInactiveClass = isFavorite ? `` : ` card__btn--disabled`;
+  const archiveButtonInactiveClass = isArchive ? ` card__btn--disabled` : ``;
+  const favoriteButtonInactiveClass = isFavorite ? ` card__btn--disabled` : ``;
 
   return {date, repeatClass, deadlineClass, archiveButtonInactiveClass, favoriteButtonInactiveClass};
 };

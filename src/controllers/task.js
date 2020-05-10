@@ -18,9 +18,15 @@ export default class TaskController {
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
     this._onEditFormSubmit = this._onEditFormSubmit.bind(this);
     this._onEscapeKeyPress = this._onEscapeKeyPress.bind(this);
+    this._task = null;
+  }
+
+  get task() {
+    return this._task;
   }
 
   render(task) {
+    this._task = task;
     const tasksContainerComponent = this._container;
     const tasksContainerElement = tasksContainerComponent.getElement();
 
