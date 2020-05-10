@@ -1,5 +1,7 @@
 const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
 
+const DEFAULT_COLOR = `black`;
+
 const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
 
 const MONTHS = [
@@ -32,4 +34,4 @@ const FilterType = {
   ARCHIVE: `archive`
 };
 
-export {COLORS, DAYS, MONTHS, SORT_TYPE, FilterType};
+export {COLORS, DAYS, MONTHS, SORT_TYPE, FilterType, DEFAULT_COLOR};

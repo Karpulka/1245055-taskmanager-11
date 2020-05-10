@@ -165,6 +165,10 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._submitHandler = handler;
   }
 
+  setButtonDeleteClickHandler(handler) {
+    this.getElement().querySelector(`form .card__delete`).addEventListener(`click`, handler);
+  }
+
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this._subscribeOnEvents();

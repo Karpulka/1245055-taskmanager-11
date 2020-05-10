@@ -1,10 +1,28 @@
 import {render, RenderPosition, replace, remove} from "../utils/render";
 import Task from "../components/task-card";
 import TaskEdit from "../components/task-edit";
+import {DEFAULT_COLOR} from "../utils/constant";
 
 const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
+};
+
+export const EmptyTask = {
+  description: ``,
+  dueDate: null,
+  repeatingDays: {
+    "mo": false,
+    "tu": false,
+    "we": false,
+    "th": false,
+    "fr": false,
+    "sa": false,
+    "su": false,
+  },
+  color: DEFAULT_COLOR,
+  isFavorite: false,
+  isArchive: false,
 };
 
 export default class TaskController {
@@ -49,6 +67,10 @@ export default class TaskController {
         }));
       });
       this._taskEditComponent.setSubmitHandler(this._onEditFormSubmit);
+      this._taskEditComponent.setButtonDeleteClickHandler(() => {
+        this._onDataChange(task, null);
+        this.destroy();
+      });
       if (oldTaskEditComponent && oldTaskComponent) {
         replace(this._taskComponent, oldTaskComponent);
         replace(this._taskEditComponent, oldTaskEditComponent);

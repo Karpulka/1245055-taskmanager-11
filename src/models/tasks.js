@@ -31,6 +31,15 @@ export default class Tasks {
     this.setTasks([].concat(this._tasks.slice(0, index), newTask, this._tasks.slice(index + 1)));
   }
 
+  deleteTask(id) {
+    const index = this._tasks.findIndex((it) => it.id === id);
+    if (index === -1) {
+      return;
+    }
+
+    this.setTasks([].concat(this._tasks.slice(0, index), this._tasks.slice(index + 1)));
+  }
+
   setFilter(filterType) {
     this._currentFilterType = filterType;
     this._callHandlers(this._filterChangeHandlers);

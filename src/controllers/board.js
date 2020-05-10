@@ -67,8 +67,8 @@ export default class BoardController {
   }
 
   _renderLoadMoreButton() {
-    const tasks = this._tasksModel.getTasks();
-    if (this._showingTasksCount >= tasks.length) {
+    remove(this._loadMoreButtonComponent);
+    if (this._showingTasksCount >= this._tasksModel.getTasks().length) {
       return;
     }
     const boardContainerElement = this._container.getElement();
@@ -77,10 +77,10 @@ export default class BoardController {
     this._loadMoreButtonComponent.setClickHandler(() => {
       const prevTasksCount = this._showingTasksCount;
       this._showingTasksCount = this._showingTasksCount + TASK_COUNT_ON_PAGE;
-      const sortedTasks = getSortedTasks(tasks, this._sortComponent.getSortType(), prevTasksCount, this._showingTasksCount);
+      const sortedTasks = getSortedTasks(this._tasksModel.getTasks(), this._sortComponent.getSortType(), prevTasksCount, this._showingTasksCount);
       const newTasks = renderTasks(this._taskListComponent, sortedTasks, this._onDataChange, this._onViewChange);
       this._showedTaskControllers = this._showedTaskControllers.concat(newTasks);
-      if (this._showingTasksCount >= tasks.length) {
+      if (this._showingTasksCount >= this._tasksModel.getTasks().length) {
         remove(this._loadMoreButtonComponent);
       }
     });
@@ -99,11 +99,18 @@ export default class BoardController {
   }
 
   _onDataChange(oldData, newData) {
-    const renderTaskControllers = this._showedTaskControllers.filter((taskController) => taskController.task.id === oldData.id);
-    this._tasksModel.updateTask(oldData.id, newData);
-    renderTaskControllers.forEach((taskController) => {
-      taskController.render(newData);
-    });
+    if (newData === null) {
+      this._tasksModel.deleteTask(oldData.id);
+      this._updateTasks(this._showingTasksCount);
+    } else if (oldData === null) {
+
+    } else {
+      const renderTaskControllers = this._showedTaskControllers.filter((taskController) => taskController.task.id === oldData.id);
+      this._tasksModel.updateTask(oldData.id, newData);
+      renderTaskControllers.forEach((taskController) => {
+        taskController.render(newData);
+      });
+    }
   }
 
   _onViewChange() {
