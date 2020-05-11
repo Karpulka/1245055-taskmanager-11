@@ -64,10 +64,27 @@ const isRepeating = (repeatingDays) => {
   return Object.values(repeatingDays).some(Boolean);
 };
 
+const parseFormData = (formData) => {
+  const repeatingDays = DAYS.reduce((acc, day) => {
+    acc[day] = false;
+    return acc;
+  }, {});
+  const date = formData.get(`date`);
+
+  return {
+    description: formData.get(`text`),
+    color: formData.get(`color`),
+    dueDate: date ? new Date(date) : null,
+    repeatingDays: formData.getAll(`repeat`).reduce((acc, it) => {
+      acc[it] = true;
+      return acc;
+    }, repeatingDays),
+  };
+};
+
 const createTaskEditTemplate = (task, options = {}) => {
-  const {description, color} = task;
-  const currentDescription = description ? encode(description) : ``;
-  const {isDateShowing, isRepeatingTask, activeRepeatingDays} = options;
+  const {color} = task;
+  const {isDateShowing, isRepeatingTask, activeRepeatingDays, currentDescription} = options;
   const {date, repeatClass, deadlineClass} = getTaskTemplateData(task);
   const colorsMarkup = createColorsMarkup(COLORS, color);
   const repeatingDaysMarkup = createRepeatingDaysMarkup(DAYS, activeRepeatingDays);
@@ -88,7 +105,7 @@ const createTaskEditTemplate = (task, options = {}) => {
                       class="card__text"
                       placeholder="Start typing your text here..."
                       name="text"
-                    >${currentDescription}</textarea>
+                    >${encode(currentDescription)}</textarea>
                   </label>
                 </div>
 
@@ -144,20 +161,18 @@ const createTaskEditTemplate = (task, options = {}) => {
 export default class TaskEdit extends AbstractSmartComponent {
   constructor(task) {
     super();
-    this._defaulTask = Object.assign({}, task);
     this._task = task;
+    this._defaultTask = Object.assign({}, task);
     this._isDateShowing = !!task.dueDate;
+    this._currentDescription = task.description;
     this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
     this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
     this._submitHandler = null;
+    this._deleteHandler = null;
     this._subscribeOnEvents();
     this._flatpickr = null;
 
     this._applyFlatpickr();
-  }
-
-  get task() {
-    return this._task;
   }
 
   removeElement() {
@@ -174,6 +189,7 @@ export default class TaskEdit extends AbstractSmartComponent {
       isDateShowing: this._isDateShowing,
       isRepeatingTask: this._isRepeatingTask,
       activeRepeatingDays: this._activeRepeatingDays,
+      currentDescription: this._currentDescription
     });
   }
 
@@ -184,10 +200,12 @@ export default class TaskEdit extends AbstractSmartComponent {
 
   setButtonDeleteClickHandler(handler) {
     this.getElement().querySelector(`form .card__delete`).addEventListener(`click`, handler);
+    this._deleteHandler = handler;
   }
 
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
+    this.setButtonDeleteClickHandler(this._deleteHandler);
     this._subscribeOnEvents();
   }
 
@@ -197,12 +215,21 @@ export default class TaskEdit extends AbstractSmartComponent {
     this._applyFlatpickr();
   }
 
-  reset() {
-    this._task = this._defaulTask;
+  getFormData() {
+    const form = this.getElement().querySelector(`.card__form`);
+    const formData = new FormData(form);
 
-    this._isDateShowing = !!this._task.dueDate;
-    this._isRepeatingTask = Object.values(this._task.repeatingDays).some(Boolean);
-    this._activeRepeatingDays = Object.assign({}, this._task.repeatingDays);
+    return parseFormData(formData);
+  }
+
+  reset() {
+    const task = this._defaultTask;
+
+    this._isDateShowing = !!task.dueDate;
+    this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
+    this._activeRepeatingDays = Object.assign({}, task.repeatingDays);
+    this._currentDescription = task.description;
+    this._task = Object.assign({}, task);
 
     this.rerender();
   }
@@ -245,7 +272,8 @@ export default class TaskEdit extends AbstractSmartComponent {
     }
 
     element.querySelector(`textarea.card__text`).addEventListener(`change`, (evt) => {
-      this._task.description = evt.target.value;
+      this._currentDescription = evt.target.value;
+      this.rerender();
     });
 
     if (element.querySelector(`[name="date"]`)) {

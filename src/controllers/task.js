@@ -70,7 +70,11 @@ export default class TaskController {
       });
       this._taskEditComponent.setSubmitHandler(this._onEditFormSubmit);
       this._taskEditComponent.setButtonDeleteClickHandler(() => {
-        this._onDataChange(task, null);
+        if (this._mode === Mode.ADDING) {
+          this._onDataChange(EmptyTask, null);
+        } else {
+          this._onDataChange(task, null);
+        }
         this.destroy();
       });
 
@@ -101,27 +105,33 @@ export default class TaskController {
 
   _onEditFormSubmit(evt) {
     evt.preventDefault();
-    this._replaceEditToTask();
+    if (this._mode === Mode.ADDING) {
+      this._mode = Mode.DEFAULT;
+      this._onDataChange(EmptyTask, this._taskEditComponent.getFormData());
+    } else {
+      this._mode = Mode.DEFAULT;
+      this._onDataChange(this._task, this._taskEditComponent.getFormData());
+    }
+    replace(this._taskComponent, this._taskEditComponent);
   }
 
   _onEscapeKeyPress(evt) {
     if (evt.key === `Escape` || evt.key === `Esc`) {
       if (this._mode === Mode.ADDING) {
-        this._mode = Mode.DEFAULT;
-        this._onDataChange(this._task, null);
-      } else {
-        this._replaceEditToTask();
+        this._onDataChange(EmptyTask, null);
       }
+      console.log(123);
+      this._replaceEditToTask();
     }
   }
 
   _replaceEditToTask() {
-    if (this._mode === Mode.ADDING) {
-      this._onDataChange(EmptyTask, this._taskEditComponent.task);
-    } else {
-      this._taskEditComponent.reset();
+    this._taskEditComponent.reset();
+
+    if (document.contains(this._taskEditComponent.getElement())) {
+      replace(this._taskComponent, this._taskEditComponent);
     }
-    replace(this._taskComponent, this._taskEditComponent);
+
     this._mode = Mode.DEFAULT;
     document.removeEventListener(`keydown`, this._onEscapeKeyPress);
   }

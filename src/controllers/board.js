@@ -116,12 +116,11 @@ export default class BoardController {
   }
 
   _onDataChange(oldData, newData) {
-    if (newData === null) {
-      this._tasksModel.deleteTask(oldData.id);
-      this._updateTasks(this._showingTasksCount);
-    } else if (oldData === EmptyTask) {
+    if (oldData === EmptyTask) {
       if (newData === null) {
         this._showedTaskControllers[0].destroy();
+        this._showedTaskControllers.shift();
+        this._showingTasksCount = this._showedTaskControllers.length;
         this._updateTasks(this._showingTasksCount);
       } else {
         this._tasksModel.addTask(newData);
@@ -134,6 +133,9 @@ export default class BoardController {
 
         this._renderLoadMoreButton();
       }
+    } else if (newData === null) {
+      this._tasksModel.deleteTask(oldData.id);
+      this._updateTasks(this._showingTasksCount);
     } else {
       const renderTaskControllers = this._showedTaskControllers.filter((taskController) => taskController.task.id === oldData.id);
       this._tasksModel.updateTask(oldData.id, newData);
