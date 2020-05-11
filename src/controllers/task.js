@@ -120,7 +120,7 @@ export default class TaskController {
       if (this._mode === Mode.ADDING) {
         this._onDataChange(EmptyTask, null);
       }
-      console.log(123);
+
       this._replaceEditToTask();
     }
   }
