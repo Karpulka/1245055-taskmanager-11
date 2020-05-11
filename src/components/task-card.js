@@ -1,9 +1,11 @@
 import {getTaskTemplateData} from "../mock/task";
 import AbstractComponent from "./abstract-component";
 import {formatTime, formatDate} from "../utils/common";
+import {encode} from "he";
 
 const createTaskCardTemplate = (task) => {
   const {description, color} = task;
+  const currentDescription = description ? encode(description) : ``;
   const {date, repeatClass, deadlineClass, archiveButtonInactiveClass, favoriteButtonInactiveClass} = getTaskTemplateData(task);
 
   return `<article class="card card--${color}${repeatClass}${deadlineClass}">
@@ -31,7 +33,7 @@ const createTaskCardTemplate = (task) => {
                 </div>
 
                 <div class="card__textarea-wrap">
-                  <p class="card__text">${description}</p>
+                  <p class="card__text">${currentDescription}</p>
                 </div>
 
                 <div class="card__settings">

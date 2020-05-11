@@ -3,8 +3,19 @@ import {getTaskTemplateData} from "../mock/task";
 import AbstractSmartComponent from "./abstract-smart-component";
 import flatpickr from "flatpickr";
 import {formatTime, formatDate} from "../utils/common";
+import {encode} from "he";
 
 import "flatpickr/dist/flatpickr.min.css";
+
+const MIN_DESCRIPTION_LENGTH = 1;
+const MAX_DESCRIPTION_LENGTH = 140;
+
+const isAllowableDescriptionLength = (description) => {
+  const length = description.length;
+
+  return length >= MIN_DESCRIPTION_LENGTH &&
+    length <= MAX_DESCRIPTION_LENGTH;
+};
 
 const createColorsMarkup = (colors, currentColor) => {
   return colors
@@ -55,11 +66,12 @@ const isRepeating = (repeatingDays) => {
 
 const createTaskEditTemplate = (task, options = {}) => {
   const {description, color} = task;
+  const currentDescription = description ? encode(description) : ``;
   const {isDateShowing, isRepeatingTask, activeRepeatingDays} = options;
   const {date, repeatClass, deadlineClass} = getTaskTemplateData(task);
   const colorsMarkup = createColorsMarkup(COLORS, color);
   const repeatingDaysMarkup = createRepeatingDaysMarkup(DAYS, activeRepeatingDays);
-  const isBlockSaveButton = (isDateShowing && isRepeatingTask) || (isRepeatingTask && !isRepeating(activeRepeatingDays));
+  const isBlockSaveButton = (isDateShowing && isRepeatingTask) || (isRepeatingTask && !isRepeating(activeRepeatingDays)) || !isAllowableDescriptionLength(currentDescription);
 
   return `<article class="card card--edit card--${color}${repeatClass}${deadlineClass}">
             <form class="card__form" method="get">
@@ -76,7 +88,7 @@ const createTaskEditTemplate = (task, options = {}) => {
                       class="card__text"
                       placeholder="Start typing your text here..."
                       name="text"
-                    >${description}</textarea>
+                    >${currentDescription}</textarea>
                   </label>
                 </div>
 
@@ -132,7 +144,7 @@ const createTaskEditTemplate = (task, options = {}) => {
 export default class TaskEdit extends AbstractSmartComponent {
   constructor(task) {
     super();
-    this._defaulTask = task;
+    this._defaulTask = Object.assign({}, task);
     this._task = task;
     this._isDateShowing = !!task.dueDate;
     this._isRepeatingTask = Object.values(task.repeatingDays).some(Boolean);
