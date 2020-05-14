@@ -1,5 +1,7 @@
 const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
 
+const DEFAULT_COLOR = `black`;
+
 const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
 
 const MONTHS = [
@@ -23,4 +25,13 @@ const SORT_TYPE = {
   DEFAULT: `default`,
 };
 
-export {COLORS, DAYS, MONTHS, SORT_TYPE};
+const FilterType = {
+  ALL: `all`,
+  OVERDUE: `overdue`,
+  TODAY: `today`,
+  FAVORITES: `favorites`,
+  REPEATING: `repeating`,
+  ARCHIVE: `archive`
+};
+
+export {COLORS, DAYS, MONTHS, SORT_TYPE, FilterType, DEFAULT_COLOR};
