@@ -5,6 +5,7 @@ import {render, RenderPosition} from "./utils/render";
 import BoardController from "./controllers/board";
 import Tasks from "./models/tasks";
 import FilterController from "./controllers/filter";
+import Statistic from "./components/statistic";
 
 const TASK_COUNT = 22;
 const mainContainer = document.querySelector(`.main`);
@@ -16,6 +17,15 @@ const tasksModel = new Tasks();
 tasksModel.setTasks(tasks);
 const filterController = new FilterController(mainControlContainer, tasksModel);
 filterController.render();
+
+const dateTo = new Date();
+const dateFrom = (() => {
+  const d = new Date(dateTo);
+  d.setDate(d.getDate() - 7);
+  return d;
+})();
+const statistic = new Statistic({tasks: tasksModel, dateFrom, dateTo});
+statistic.hide();
 
 const menuComponent = new Menu();
 render(mainControlContainer, menuComponent, RenderPosition.BEFOREEND);
@@ -29,7 +39,19 @@ menuComponent.setOnChange((menuItem) => {
   switch (menuItem) {
     case MenuItem.NEW_TASK:
       menuComponent.setActiveItem(MenuItem.TASKS);
+      statistic.hide();
+      boardController.show();
       boardController.createTask();
+      break;
+    case MenuItem.STATISTICS:
+      boardController.hide();
+      statistic.show();
+      break;
+    default:
+      statistic.hide();
+      boardController.show();
       break;
   }
 });
+
+render(mainContainer, statistic, RenderPosition.BEFOREEND);
