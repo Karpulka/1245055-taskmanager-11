@@ -83,6 +83,21 @@ export default class BoardController {
     this._showingTasksCount = this._showedTaskControllers.length;
   }
 
+  show() {
+    const containerElement = this._container.getElement();
+    if (containerElement.classList.contains(`visually-hidden`)) {
+      this._changeSort(SORT_TYPE.DEFAULT);
+      containerElement.classList.remove(`visually-hidden`);
+    }
+  }
+
+  hide() {
+    const containerElement = this._container.getElement();
+    if (!containerElement.classList.contains(`visually-hidden`)) {
+      containerElement.classList.add(`visually-hidden`);
+    }
+  }
+
   _renderLoadMoreButton() {
     remove(this._loadMoreButtonComponent);
     if (this._showingTasksCount >= this._tasksModel.getTasks().length) {
@@ -105,14 +120,18 @@ export default class BoardController {
 
   _onSortTypeChange() {
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
-      this._showingTasksCount = TASK_COUNT_ON_PAGE;
-      const sortedTasks = getSortedTasks(this._tasksModel.getTasks(), sortType, 0, this._showingTasksCount);
-      this._taskListComponent.getElement().innerHTML = ``;
-      const newTasks = renderTasks(this._taskListComponent, sortedTasks, this._onDataChange, this._onViewChange);
-      this._showedTaskControllers = [].concat(newTasks);
-      remove(this._loadMoreButtonComponent);
-      this._renderLoadMoreButton();
+      this._changeSort(sortType);
     });
+  }
+
+  _changeSort(sortType) {
+    this._showingTasksCount = TASK_COUNT_ON_PAGE;
+    const sortedTasks = getSortedTasks(this._tasksModel.getTasks(), sortType, 0, this._showingTasksCount);
+    this._taskListComponent.getElement().innerHTML = ``;
+    const newTasks = renderTasks(this._taskListComponent, sortedTasks, this._onDataChange, this._onViewChange);
+    this._showedTaskControllers = [].concat(newTasks);
+    remove(this._loadMoreButtonComponent);
+    this._renderLoadMoreButton();
   }
 
   _onDataChange(oldData, newData) {
