@@ -18,7 +18,13 @@ tasksModel.setTasks(tasks);
 const filterController = new FilterController(mainControlContainer, tasksModel);
 filterController.render();
 
-const statistic = new Statistic();
+const dateTo = new Date();
+const dateFrom = (() => {
+  const d = new Date(dateTo);
+  d.setDate(d.getDate() - 7);
+  return d;
+})();
+const statistic = new Statistic({tasks: tasksModel, dateFrom, dateTo});
 statistic.hide();
 
 const menuComponent = new Menu();
