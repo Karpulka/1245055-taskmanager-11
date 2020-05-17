@@ -1,22 +1,14 @@
-import Menu, {MenuItem} from "./components/menu";
+import API from "./api";
 import Board from "./components/board";
-import {generateTasks} from "./mock/task";
-import {render, RenderPosition} from "./utils/render";
 import BoardController from "./controllers/board";
-import Tasks from "./models/tasks";
 import FilterController from "./controllers/filter";
+import Menu, {MenuItem} from "./components/menu";
 import Statistic from "./components/statistic";
+import Tasks from "./models/tasks";
+import {render, RenderPosition} from "./utils/render";
 
-const TASK_COUNT = 22;
-const mainContainer = document.querySelector(`.main`);
-const mainControlContainer = document.querySelector(`.main__control`);
-
-const tasks = generateTasks(TASK_COUNT);
-
-const tasksModel = new Tasks();
-tasksModel.setTasks(tasks);
-const filterController = new FilterController(mainControlContainer, tasksModel);
-filterController.render();
+const AUTHORIZATION = `Basic 15GHFxc57vbnhh1fhFvbn5gvFHDv2=`;
+const END_POINT = `https://11.ecmascript.pages.academy/task-manager`;
 
 const dateTo = new Date();
 const dateFrom = (() => {
@@ -24,16 +16,22 @@ const dateFrom = (() => {
   d.setDate(d.getDate() - 7);
   return d;
 })();
-const statistic = new Statistic({tasks: tasksModel, dateFrom, dateTo});
-statistic.hide();
 
+const api = new API(END_POINT, AUTHORIZATION);
+const tasksModel = new Tasks();
+
+const mainContainer = document.querySelector(`.main`);
+const mainControlContainer = document.querySelector(`.main__control`);
 const menuComponent = new Menu();
-render(mainControlContainer, menuComponent, RenderPosition.BEFOREEND);
-
+const statistic = new Statistic({tasks: tasksModel, dateFrom, dateTo});
 const boardContainer = new Board();
-render(mainContainer, boardContainer, RenderPosition.BEFOREEND);
 const boardController = new BoardController(boardContainer, tasksModel);
-boardController.render();
+const filterController = new FilterController(mainControlContainer, tasksModel);
+
+render(mainControlContainer, menuComponent, RenderPosition.BEFOREEND);
+filterController.render();
+statistic.hide();
+render(mainContainer, boardContainer, RenderPosition.BEFOREEND);
 
 menuComponent.setOnChange((menuItem) => {
   switch (menuItem) {
@@ -55,3 +53,9 @@ menuComponent.setOnChange((menuItem) => {
 });
 
 render(mainContainer, statistic, RenderPosition.BEFOREEND);
+
+api.getTasks()
+  .then((tasks) => {
+    tasksModel.setTasks(tasks);
+    boardController.render();
+  });

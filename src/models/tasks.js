@@ -10,6 +10,7 @@ export default class Tasks {
   }
 
   setTasks(tasks) {
+    console.log(tasks);
     this._tasks = tasks.slice();
     this._callHandlers(this._dataChangeHandlers);
   }
