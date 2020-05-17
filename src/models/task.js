@@ -1,4 +1,4 @@
-export default class Task {
+export default class TaskModel {
   constructor(data) {
     this.id = data[`id`];
     this.description = data[`description`] || ``;
@@ -22,10 +22,14 @@ export default class Task {
   }
 
   static parseTask(data) {
-    return new Task(data);
+    return new TaskModel(data);
   }
 
   static parseTasks(data) {
-    return data.map(Task.parseTask);
+    return data.map(TaskModel.parseTask);
+  }
+
+  static clone(data) {
+    return new TaskModel(data.toRAW());
   }
 }

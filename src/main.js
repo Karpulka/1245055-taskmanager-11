@@ -2,10 +2,11 @@ import API from "./api";
 import Board from "./components/board";
 import BoardController from "./controllers/board";
 import FilterController from "./controllers/filter";
+import Load from "./components/load";
 import Menu, {MenuItem} from "./components/menu";
 import Statistic from "./components/statistic";
 import Tasks from "./models/tasks";
-import {render, RenderPosition} from "./utils/render";
+import {render, remove, RenderPosition} from "./utils/render";
 
 const AUTHORIZATION = `Basic 15GHFxc57vbnhh1fhFvbn5gvFHDv2=`;
 const END_POINT = `https://11.ecmascript.pages.academy/task-manager`;
@@ -23,9 +24,10 @@ const tasksModel = new Tasks();
 const mainContainer = document.querySelector(`.main`);
 const mainControlContainer = document.querySelector(`.main__control`);
 const menuComponent = new Menu();
+const loadComponent = new Load();
 const statistic = new Statistic({tasks: tasksModel, dateFrom, dateTo});
 const boardContainer = new Board();
-const boardController = new BoardController(boardContainer, tasksModel);
+const boardController = new BoardController(boardContainer, tasksModel, api);
 const filterController = new FilterController(mainControlContainer, tasksModel);
 
 render(mainControlContainer, menuComponent, RenderPosition.BEFOREEND);
@@ -53,9 +55,15 @@ menuComponent.setOnChange((menuItem) => {
 });
 
 render(mainContainer, statistic, RenderPosition.BEFOREEND);
+render(boardContainer.getElement(), loadComponent, RenderPosition.BEFOREEND);
 
 api.getTasks()
   .then((tasks) => {
+    remove(loadComponent);
     tasksModel.setTasks(tasks);
+    boardController.render();
+  })
+  .catch(() => {
+    tasksModel.setTasks([]);
     boardController.render();
   });
