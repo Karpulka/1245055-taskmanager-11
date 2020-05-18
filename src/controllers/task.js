@@ -93,6 +93,10 @@ export default class TaskController {
       });
       this._taskEditComponent.setSubmitHandler(this._onEditFormSubmit);
       this._taskEditComponent.setButtonDeleteClickHandler(() => {
+        this._taskEditComponent.setData({
+          deleteButtonText: `Deleting...`,
+        });
+
         if (this._mode === Mode.ADDING) {
           this._onDataChange(EmptyTask, null);
         } else {
@@ -131,6 +135,10 @@ export default class TaskController {
 
     const formData = this._taskEditComponent.getFormData();
     const data = parseFormData(formData);
+
+    this._taskEditComponent.setData({
+      saveButtonText: `Saving...`,
+    });
 
     if (this._mode === Mode.ADDING) {
       this._mode = Mode.DEFAULT;
