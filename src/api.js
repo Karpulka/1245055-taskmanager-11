@@ -27,6 +27,21 @@ export default class API {
       .then(TaskModel.parseTasks);
   }
 
+  createTask(task) {
+    return this._load({
+      url: `tasks`,
+      method: Method.POST,
+      body: JSON.stringify(task.toRAW()),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then((response) => response.json())
+      .then(TaskModel.parseTask);
+  }
+
+  deleteTask(id) {
+    return this._load({url: `tasks/${id}`, method: Method.DELETE});
+  }
+
   updateTask(id, data) {
     return this._load({
       url: `tasks/${id}`,
