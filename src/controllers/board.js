@@ -37,7 +37,7 @@ const renderTasks = (taskListComponent, tasks, onDataChange, onViewChange) => {
 };
 
 export default class BoardController {
-  constructor(container, tasksModel) {
+  constructor(container, tasksModel, api) {
     this._container = container;
     this._tasksModel = tasksModel;
     this._sortComponent = new Sort();
@@ -51,6 +51,7 @@ export default class BoardController {
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._tasksModel.setFilterChangeHandler(this._onFilterChange);
+    this._api = api;
   }
 
   render() {
@@ -156,11 +157,14 @@ export default class BoardController {
       this._tasksModel.deleteTask(oldData.id);
       this._updateTasks(this._showingTasksCount);
     } else {
-      const renderTaskControllers = this._showedTaskControllers.filter((taskController) => taskController.task.id === oldData.id);
-      this._tasksModel.updateTask(oldData.id, newData);
-      renderTaskControllers.forEach((taskController) => {
-        taskController.render(newData);
-      });
+      this._api.updateTask(oldData.id, newData)
+        .then((task) => {
+          const renderTaskControllers = this._showedTaskControllers.filter((taskController) => taskController.task.id === task.id);
+          this._tasksModel.updateTask(task.id, task);
+          renderTaskControllers.forEach((taskController) => {
+            taskController.render(task);
+          });
+        });
     }
     this._creatingTask = null;
   }
