@@ -143,19 +143,25 @@ export default class BoardController {
         this._showingTasksCount = this._showedTaskControllers.length;
         this._updateTasks(this._showingTasksCount);
       } else {
-        this._tasksModel.addTask(newData);
-        this._showedTaskControllers[0].render(newData, TaskControllerMode.DEFAULT);
+        this._api.createTask(newData)
+          .then((taskModel) => {
+            this._tasksModel.addTask(taskModel);
+            this._showedTaskControllers[0].render(taskModel, TaskControllerMode.DEFAULT);
 
-        if (this._showingTasksCount % TASK_COUNT_ON_PAGE === 0) {
-          const destroyedTask = this._showedTaskControllers.pop();
-          destroyedTask.destroy();
-        }
+            if (this._showingTasksCount % TASK_COUNT_ON_PAGE === 0) {
+              const destroyedTask = this._showedTaskControllers.pop();
+              destroyedTask.destroy();
+            }
 
-        this._renderLoadMoreButton();
+            this._renderLoadMoreButton();
+          });
       }
     } else if (newData === null) {
-      this._tasksModel.deleteTask(oldData.id);
-      this._updateTasks(this._showingTasksCount);
+      this._api.deleteTask(oldData.id)
+        .then(() => {
+          this._tasksModel.deleteTask(oldData.id);
+          this._updateTasks(this._showingTasksCount);
+        });
     } else {
       this._api.updateTask(oldData.id, newData)
         .then((task) => {
