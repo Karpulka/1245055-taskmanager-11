@@ -154,6 +154,9 @@ export default class BoardController {
             }
 
             this._renderLoadMoreButton();
+          })
+          .catch(() => {
+            this._shake(oldData.id);
           });
       }
     } else if (newData === null) {
@@ -161,6 +164,9 @@ export default class BoardController {
         .then(() => {
           this._tasksModel.deleteTask(oldData.id);
           this._updateTasks(this._showingTasksCount);
+        })
+        .catch(() => {
+          this._shake(oldData.id);
         });
     } else {
       this._api.updateTask(oldData.id, newData)
@@ -170,9 +176,19 @@ export default class BoardController {
           renderTaskControllers.forEach((taskController) => {
             taskController.render(task);
           });
+        })
+        .catch(() => {
+          this._shake(oldData.id);
         });
     }
     this._creatingTask = null;
+  }
+
+  _shake(taskId) {
+    const renderTaskControllers = this._showedTaskControllers.filter((taskController) => taskController.task.id === taskId);
+    renderTaskControllers.forEach((taskController) => {
+      taskController.shake();
+    });
   }
 
   _onViewChange() {

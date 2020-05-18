@@ -4,6 +4,8 @@ import TaskEdit from "../components/task-edit";
 import TaskModel from "../models/task";
 import {DEFAULT_COLOR, DAYS} from "../utils/constant";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 const parseFormData = (formData) => {
   const date = formData.get(`date`);
   const repeatingDays = DAYS.reduce((acc, day) => {
@@ -178,5 +180,15 @@ export default class TaskController {
     remove(this._taskEditComponent);
     remove(this._taskComponent);
     document.removeEventListener(`keydown`, this._onEscapeKeyPress);
+  }
+
+  shake() {
+    this._taskEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._taskComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._taskEditComponent.getElement().style.animation = ``;
+      this._taskComponent.getElement().style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }
